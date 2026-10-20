@@ -20,3 +20,7 @@ const erf = x => { const t = 1 / (1 + 0.3275911 * Math.abs(x)), p = 1 - (((((1.0
 export function sen(y) { const s = [], n = y.length; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) s.push((y[j] - y[i]) / (j - i)); s.sort((a, b) => a - b); const N = s.length, C = 1.96 * Math.sqrt((n * (n - 1) * (2 * n + 5)) / 18); return { m: median(s), lo: s[Math.max(0, Math.floor((N - C) / 2))], hi: s[Math.min(N - 1, Math.ceil((N + C) / 2))] }; }
 export function mk(y) { let S = 0; const n = y.length; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) S += Math.sign(y[j] - y[i]); const z = (S - Math.sign(S)) / Math.sqrt((n * (n - 1) * (2 * n + 5)) / 18); return 2 * (1 - 0.5 * (1 + erf(Math.abs(z) / Math.SQRT2))); }
 export function stats(d, off) { const an = anomalies(d, off), s = sen(an), raw = sen(d).m; return { an, dec: s.m * 120, lo: s.lo * 120, hi: s.hi * 120, p: mk(an), raw, icpt: median(d.map((v, i) => v - raw * i)) }; }
+// Palettes d'anomalie par indicateur (couleur + libellé : jamais la couleur seule). Bruns/verts = ColorBrewer BrBG.
+Object.assign(IND.pr, { pos: '#01665E', neg: '#8C510A', lp: 'plus humide que la normale', ln: 'plus sec que la normale' });
+Object.assign(IND.lst, { pos: '#E43700', neg: '#0960E1', lp: 'plus chaud que la normale', ln: 'plus frais que la normale' });
+Object.assign(IND.ndvi, { pos: '#1A7F37', neg: '#8C510A', lp: 'plus vert que la normale', ln: 'moins vert que la normale' });
